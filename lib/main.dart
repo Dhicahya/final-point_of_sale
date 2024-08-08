@@ -1,7 +1,7 @@
 import 'package:finalproject_sanber/firebase_option.dart';
 import 'package:finalproject_sanber/logic/auth_bloc/auth_bloc.dart';
-import 'package:finalproject_sanber/logic/cart_bloc/cart_bloc.dart';
 import 'package:finalproject_sanber/logic/inventory_bloc/inventory_bloc.dart';
+import 'package:finalproject_sanber/logic/order_bloc/order_bloc.dart';
 import 'package:finalproject_sanber/logic/user_bloc/user_bloc.dart';
 import 'package:finalproject_sanber/services/user_service.dart';
 import 'package:finalproject_sanber/ui/pages/login_page.dart';
@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
         BlocProvider<InventoryBloc>(
           create: (context) => InventoryBloc()..add(LoadProducts()),
         ),
-        BlocProvider<CartBloc>(create: (context) => CartBloc()),
+        BlocProvider<OrderBloc>(create: (context) => OrderBloc()),
         // BlocProvider<WhislistBloc>(create: (context) => WhislistBloc()),
       ],
       child: MaterialApp(
