@@ -1,5 +1,6 @@
 import 'package:badges/badges.dart' as badges; // Import badges package
 import 'package:finalproject_sanber/logic/order_bloc/order_bloc.dart';
+import 'package:finalproject_sanber/logic/user_bloc/user_bloc.dart';
 import 'package:finalproject_sanber/shared/theme.dart';
 import 'package:finalproject_sanber/ui/pages/order_page.dart';
 import 'package:finalproject_sanber/ui/pages/inventory_page.dart';
@@ -37,6 +38,9 @@ class _LayoutNavigationState extends State<LayoutNavigation> {
         builder: (context, state) {
           final orderCount = state is OrderSuccess ? state.totalOrders : 0;
           return BottomNavigationBar(
+            backgroundColor: blueColor,
+            fixedColor: whiteColor,
+            unselectedItemColor: whiteColor,
             type: BottomNavigationBarType.fixed,
             currentIndex: currentIndex,
             onTap: (value) {

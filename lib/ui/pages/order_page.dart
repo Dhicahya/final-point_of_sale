@@ -1,4 +1,5 @@
 import 'package:badges/badges.dart' as badges;
+import 'package:finalproject_sanber/shared/theme.dart';
 import 'package:finalproject_sanber/ui/pages/detail_order_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,15 +16,21 @@ class OrderPage extends StatefulWidget {
 
 class _OrderPageState extends State<OrderPage> {
   final Map<String, int> _quantities = {}; // Track quantities for each product
+  int _totalOrderCount = 0; // Track total order count for badge
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Order'),
+        title: Text('Order',
+        style: blackColorStyle.copyWith(fontSize: 24, fontWeight: regular),
+        ),
         automaticallyImplyLeading: false,
+        backgroundColor: whiteColor,
       ),
-      body: BlocBuilder<InventoryBloc, InventoryState>(
+      body: Container(
+        color: whiteColor,
+        child: BlocBuilder<InventoryBloc, InventoryState>(
         builder: (context, state) {
           if (state is InventoryLoading) {
             return const Center(child: CircularProgressIndicator());
@@ -35,6 +42,7 @@ class _OrderPageState extends State<OrderPage> {
               itemBuilder: (context, index) {
                 final product = state.products[index];
                 return Card(
+                  color: blueColor,
                   margin: const EdgeInsets.all(8.0),
                   elevation: 5,
                   child: ListTile(
@@ -47,23 +55,26 @@ class _OrderPageState extends State<OrderPage> {
                       ),
                     ),
                     title: Text(product.name,
-                        style: const TextStyle(fontWeight: FontWeight.bold)),
+                        style: whiteTextStyle.copyWith(fontWeight: bold)),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text('Stock: ${product.stock}'),
-                        Text('Price: \$${product.price.toStringAsFixed(2)}'),
+                        Text('Stock: ${product.stock}',
+                        style: whiteTextStyle.copyWith(fontWeight: regular),),
+                        Text('Price: \Rp ${product.price.toStringAsFixed(2)}',
+                        style: whiteTextStyle.copyWith(fontWeight: regular)),
                         Row(
                           children: <Widget>[
                             IconButton(
-                              icon: const Icon(Icons.remove),
+                              icon: const Icon(Icons.remove, color: whiteColor,),
                               onPressed: () {
                                 _updateQuantity(product.id, -1);
                               },
                             ),
-                            Text(_quantities[product.id]?.toString() ?? '0'),
+                            Text(_quantities[product.id]?.toString() ?? '0', 
+                            style: whiteTextStyle.copyWith(fontWeight: regular, fontSize: 16)),
                             IconButton(
-                              icon: const Icon(Icons.add),
+                              icon: const Icon(Icons.add, color: whiteColor,),
                               onPressed: () {
                                 _updateQuantity(product.id, 1);
                               },
@@ -84,6 +95,7 @@ class _OrderPageState extends State<OrderPage> {
                             // Clear the quantity after adding the order
                             setState(() {
                               _quantities[product.id] = 0;
+                              _updateTotalOrderCount();
                             });
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -93,7 +105,8 @@ class _OrderPageState extends State<OrderPage> {
                           }
                         }
                       },
-                      child: const Text('Order'),
+                      child: Text('Order',
+                      style: blueColorStyle.copyWith(fontWeight: regular)),
                     ),
                   ),
                 );
@@ -103,44 +116,37 @@ class _OrderPageState extends State<OrderPage> {
             return const Center(child: Text('No products available.'));
           }
         },
-      ),
-      floatingActionButton: BlocBuilder<OrderBloc, OrderState>(
-          builder: (context, state) {
-            final orderCount = state is OrderSuccess ? state.totalOrders : 0;
-            return FloatingActionButton(
-              onPressed: () {
-                final inventoryState = context.read<InventoryBloc>().state;
-                if (inventoryState is InventoryLoaded) {
-                  final products = inventoryState.products;
-                  print('Quantities: $_quantities'); // Debugging
-                  print(
-                      'Products: ${products.map((p) => p.name).toList()}'); // Debugging
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => OrderDetailPage(
-                      products: products,
-                      quantities: _quantities,
-                    ),
-                  ));
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Unable to load products')),
-                  );
-                }
-              },
-              child: badges.Badge(
-                badgeContent: Text(
-                  orderCount.toString(),
-                  style: const TextStyle(color: Colors.white),
-                ),
-                badgeStyle: badges.BadgeStyle(
-                  badgeColor: Colors.red,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Icon(Icons.shopping_cart),
+      ),),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: blueColor,
+        onPressed: () {
+          final inventoryState = context.read<InventoryBloc>().state;
+          if (inventoryState is InventoryLoaded) {
+            final products = inventoryState.products;
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => OrderDetailPage(
+                products: products,
+                quantities: _quantities,
               ),
+            ));
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Unable to load products')),
             );
-          },
-        )
+          }
+        },
+        child: badges.Badge(
+          badgeContent: Text(
+            _totalOrderCount.toString(),
+            style: const TextStyle(color: Colors.white),
+          ),
+          badgeStyle: badges.BadgeStyle(
+            badgeColor: Colors.red,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(Icons.shopping_cart, color: whiteColor,),
+        ),
+      ),
     );
   }
 
@@ -150,6 +156,13 @@ class _OrderPageState extends State<OrderPage> {
       final newQuantity =
           (currentQuantity + change).clamp(0, double.infinity).toInt();
       _quantities[productId] = newQuantity;
+      _updateTotalOrderCount();
+    });
+  }
+
+  void _updateTotalOrderCount() {
+    setState(() {
+      _totalOrderCount = _quantities.values.fold(0, (sum, qty) => sum + qty);
     });
   }
 }

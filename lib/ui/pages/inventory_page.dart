@@ -100,7 +100,7 @@ class InventoryPage extends StatelessWidget {
   Future<void> _showAddProductDialog(BuildContext context) async {
     final nameController = TextEditingController();
     final stockController = TextEditingController();
-    final priceController = TextEditingController(); // Controller untuk harga
+    final priceController = TextEditingController(); // Controller for price
     File? _imageFile;
     final _picker = ImagePicker();
     final _imageUrl = ValueNotifier<String?>(null);
@@ -198,7 +198,7 @@ class InventoryPage extends StatelessWidget {
                         AddProduct(
                           name: name,
                           stock: stock,
-                          price: price, // Tambahkan harga
+                          price: price,
                           imageUrl: imageUrl,
                         ),
                       );
@@ -225,12 +225,23 @@ class InventoryPage extends StatelessWidget {
     );
   }
 
-  void _showProductDialog(BuildContext context, Product product) {
+  Future<void> _showProductDialog(BuildContext context, Product product) async {
     final nameController = TextEditingController(text: product.name);
     final stockController =
         TextEditingController(text: product.stock.toString());
     final priceController =
         TextEditingController(text: product.price.toString());
+    File? _imageFile;
+    final _picker = ImagePicker();
+    final _imageUrl = ValueNotifier<String?>(product.imageUrl);
+
+    Future<void> _pickImage() async {
+      final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+      if (pickedFile != null) {
+        _imageFile = File(pickedFile.path);
+        _imageUrl.value = pickedFile.path; // Update image preview
+      }
+    }
 
     showDialog(
       context: context,
@@ -254,7 +265,13 @@ class InventoryPage extends StatelessWidget {
                 keyboardType: TextInputType.numberWithOptions(decimal: true),
                 decoration: const InputDecoration(labelText: 'Price'),
               ),
-              // Image upload logic here (if required)
+              
+              TextButton(
+                child: const Text('Pick Image'),
+                onPressed: () async {
+                  await _pickImage();
+                },
+              ),
             ],
           ),
           actions: <Widget>[
@@ -266,25 +283,56 @@ class InventoryPage extends StatelessWidget {
             ),
             TextButton(
               child: const Text('Update'),
-              onPressed: () {
+              onPressed: () async {
                 final name = nameController.text;
                 final stock = int.tryParse(stockController.text) ?? 0;
                 final price = double.tryParse(priceController.text) ?? 0.0;
 
-                context.read<InventoryBloc>().add(
-                      UpdateProduct(
-                        id: product.id,
-                        name: name,
-                        stock: stock,
-                        price: price, // Tambahkan harga
-                      ),
-                    );
+                if (name.isEmpty || stock <= 0 || price <= 0.0) {
+                  ToastMessage(
+                    context: context,
+                    type: ToastificationType.error,
+                    message: 'Please fill all fields',
+                  ).toastCustom();
+                  return;
+                }
 
-                ToastMessage(
-                  context: context,
-                  type: ToastificationType.success,
-                  message: 'Product updated successfully',
-                ).toastCustom();
+                try {
+                  String? imageUrl = product.imageUrl;
+
+                  if (_imageFile != null) {
+                    // Upload new image to Firebase Storage
+                    final storageRef = FirebaseStorage.instance.ref();
+                    final fileRef = storageRef.child(
+                        'product_images/${DateTime.now().millisecondsSinceEpoch}.jpg');
+                    final uploadTask = fileRef.putFile(_imageFile!);
+                    final snapshot = await uploadTask.whenComplete(() {});
+                    imageUrl = await snapshot.ref.getDownloadURL();
+                  }
+
+                  // Update product in Firestore
+                  context.read<InventoryBloc>().add(
+                        UpdateProduct(
+                          id: product.id,
+                          name: name,
+                          stock: stock,
+                          price: price,
+                          imageUrl: imageUrl,
+                        ),
+                      );
+
+                  ToastMessage(
+                    context: context,
+                    type: ToastificationType.success,
+                    message: 'Product updated successfully',
+                  ).toastCustom();
+                } catch (e) {
+                  ToastMessage(
+                    context: context,
+                    type: ToastificationType.error,
+                    message: 'Failed to update product',
+                  ).toastCustom();
+                }
 
                 Navigator.of(context).pop();
               },

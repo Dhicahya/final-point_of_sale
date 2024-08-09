@@ -52,6 +52,7 @@ class InventoryBloc extends Bloc<InventoryEvent, InventoryState> {
         'name': event.name,
         'stock': event.stock,
         'price': event.price,
+        'imageUrl': event.imageUrl,
       });
       add(LoadProducts());
     } catch (e) {

@@ -1,7 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:finalproject_sanber/shared/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:finalproject_sanber/models/product_model.dart';
+import 'package:finalproject_sanber/shared/theme.dart';
 
 class OrderDetailPage extends StatelessWidget {
   final List<Product> products;
@@ -47,7 +46,7 @@ class OrderDetailPage extends StatelessWidget {
                 children: <Widget>[
                   Text('Quantity: $quantity'),
                   Text(
-                      'Price: \$${(product.price * quantity).toStringAsFixed(2)}'),
+                      'Price: \Rp ${(product.price * quantity).toStringAsFixed(2)}'),
                 ],
               ),
             ),
@@ -58,7 +57,9 @@ class OrderDetailPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Order Details'),
+        title: Text('Order Details',
+        style: blackColorStyle.copyWith(fontSize: 24, fontWeight: regular),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -77,14 +78,14 @@ class OrderDetailPage extends StatelessWidget {
               padding: const EdgeInsets.all(8.0),
               child: Text(
                 'Total Items: $totalItems',
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                style: blackColorStyle.copyWith(fontSize: 16,fontWeight: bold),
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
                 'Total Price: \Rp ${totalPrice.toStringAsFixed(2)}',
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                style: blackColorStyle.copyWith(fontSize: 16, fontWeight: bold),
               ),
             ),
             Row(
@@ -94,9 +95,10 @@ class OrderDetailPage extends StatelessWidget {
                     onPressed: () {
                       Navigator.of(context).pop(); // Close the detail page
                     },
-                    child: Text('Cancel', style: redColorStyle.copyWith(
-                          fontSize: 14, 
-                          fontWeight: regular),
+                    child: Text(
+                      'Cancel',
+                      style: redColorStyle.copyWith(
+                          fontSize: 14, fontWeight: regular),
                     ),
                     style: OutlinedButton.styleFrom(
                       side: BorderSide(color: Colors.red), // Outline color
@@ -109,11 +111,13 @@ class OrderDetailPage extends StatelessWidget {
                 Expanded(
                   child: OutlinedButton(
                     onPressed: () {
-                      // Add your payment logic here
+                      _showPaymentModal(context);
                     },
-                    child: Text('Proceed to Payment', style: blueColorStyle.copyWith(
-                      fontSize: 14, 
-                      fontWeight: regular),),
+                    child: Text(
+                      'Proceed to Payment',
+                      style: blueColorStyle.copyWith(
+                          fontSize: 14, fontWeight: regular),
+                    ),
                     style: OutlinedButton.styleFrom(
                       side: BorderSide(color: Colors.blue), // Outline color
                       backgroundColor: Colors.white, // Button background color
@@ -127,6 +131,55 @@ class OrderDetailPage extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  void _showPaymentModal(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Select Payment Method'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  // Handle cash payment logic here
+                },
+                child: Text(
+                  'Pay with Cash',
+                  style: blueColorStyle.copyWith(
+                      fontSize: 14, fontWeight: regular),
+                ),
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(color: Colors.blue), // Outline color
+                  backgroundColor: Colors.white, // Button background color
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                ),
+              ),
+              const SizedBox(height: 16.0),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  // Handle bank transfer payment logic here
+                },
+                child: Text(
+                  'Pay with Bank Transfer',
+                  style: blueColorStyle.copyWith(
+                      fontSize: 14, fontWeight: regular),
+                ),
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(color: Colors.blue), // Outline color
+                  backgroundColor: Colors.white, // Button background color
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

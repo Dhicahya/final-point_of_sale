@@ -32,12 +32,14 @@ class UpdateProduct extends InventoryEvent {
   final String name;
   final int stock;
   final double price;
+  final String imageUrl;
 
   const UpdateProduct({
     required this.id,
     required this.name,
     required this.stock,
     required this.price,
+    required this.imageUrl,
   });
 
   @override
