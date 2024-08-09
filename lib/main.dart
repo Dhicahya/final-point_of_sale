@@ -40,8 +40,8 @@ class MyApp extends StatelessWidget {
         BlocProvider<InventoryBloc>(
           create: (context) => InventoryBloc()..add(LoadProducts()),
         ),
-        BlocProvider<OrderBloc>(create: (context) => OrderBloc()),
-        // BlocProvider<WhislistBloc>(create: (context) => WhislistBloc()),
+        BlocProvider<OrderBloc>(
+          create: (context) => OrderBloc()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

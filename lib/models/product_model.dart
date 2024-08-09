@@ -21,7 +21,7 @@ class Product {
       id: doc.id,
       name: data['name'] ?? '',
       stock: data['stock'] ?? 0,
-      price: data['price'] ?? double,
+      price: (data['price'] as num?)?.toDouble() ?? 0.0,
       imageUrl: data['imageUrl'] ?? '',
     );
   }

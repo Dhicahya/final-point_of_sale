@@ -1,5 +1,4 @@
 import 'package:badges/badges.dart' as badges; // Import badges package
-import 'package:finalproject_sanber/logic/cart_bloc/cart_bloc.dart';
 import 'package:finalproject_sanber/logic/order_bloc/order_bloc.dart';
 import 'package:finalproject_sanber/shared/theme.dart';
 import 'package:finalproject_sanber/ui/pages/order_page.dart';

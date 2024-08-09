@@ -9,8 +9,10 @@ abstract class OrderState extends Equatable {
 
 class OrderInitial extends OrderState {}
 
+class OrderLoading extends OrderState {}
+
 class OrderSuccess extends OrderState {
-  final int totalOrders; // Add this field to track total orders
+  final int totalOrders; // Total orders in the cart
 
   const OrderSuccess(this.totalOrders);
 
