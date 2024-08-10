@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:finalproject_sanber/logic/order_bloc/order_bloc.dart';
 import 'package:finalproject_sanber/logic/inventory_bloc/inventory_bloc.dart';
-import 'package:finalproject_sanber/models/product_model.dart';
 
 class OrderPage extends StatefulWidget {
   const OrderPage({super.key});
@@ -22,101 +21,114 @@ class _OrderPageState extends State<OrderPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Order',
-        style: blackColorStyle.copyWith(fontSize: 24, fontWeight: regular),
+        title: Text(
+          'Order',
+          style: whiteTextStyle.copyWith(fontSize: 24, fontWeight: regular),
         ),
         automaticallyImplyLeading: false,
-        backgroundColor: whiteColor,
+        backgroundColor: blueColor,
       ),
       body: Container(
         color: whiteColor,
         child: BlocBuilder<InventoryBloc, InventoryState>(
-        builder: (context, state) {
-          if (state is InventoryLoading) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is InventoryError) {
-            return Center(child: Text('Error: ${state.message}'));
-          } else if (state is InventoryLoaded) {
-            return ListView.builder(
-              itemCount: state.products.length,
-              itemBuilder: (context, index) {
-                final product = state.products[index];
-                return Card(
-                  color: blueColor,
-                  margin: const EdgeInsets.all(8.0),
-                  elevation: 5,
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.all(8.0),
-                    leading: AspectRatio(
-                      aspectRatio: 1,
-                      child: Image.network(
-                        product.imageUrl,
-                        fit: BoxFit.cover,
+          builder: (context, state) {
+            if (state is InventoryLoading) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (state is InventoryError) {
+              return Center(child: Text('Error: ${state.message}'));
+            } else if (state is InventoryLoaded) {
+              return ListView.builder(
+                itemCount: state.products.length,
+                itemBuilder: (context, index) {
+                  final product = state.products[index];
+                  return Card(
+                    color: blueColor,
+                    margin: const EdgeInsets.all(8.0),
+                    elevation: 5,
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.all(8.0),
+                      leading: AspectRatio(
+                        aspectRatio: 1,
+                        child: Image.network(
+                          product.imageUrl,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      title: Text(product.name,
+                          style: whiteTextStyle.copyWith(fontWeight: bold)),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            'Stock: ${product.stock}',
+                            style: whiteTextStyle.copyWith(fontWeight: regular),
+                          ),
+                          Text('Price: \Rp ${product.price.toStringAsFixed(2)}',
+                              style:
+                                  whiteTextStyle.copyWith(fontWeight: regular)),
+                          Row(
+                            children: <Widget>[
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.remove,
+                                  color: whiteColor,
+                                ),
+                                onPressed: () {
+                                  _updateQuantity(product.id, -1);
+                                },
+                              ),
+                              Text(_quantities[product.id]?.toString() ?? '0',
+                                  style: whiteTextStyle.copyWith(
+                                      fontWeight: regular, fontSize: 16)),
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.add,
+                                  color: whiteColor,
+                                ),
+                                onPressed: () {
+                                  _updateQuantity(product.id, 1);
+                                },
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      trailing: ElevatedButton(
+                        onPressed: () {
+                          final quantity = _quantities[product.id] ?? 0;
+                          if (quantity > 0) {
+                            if (product.stock >= quantity) {
+                              context.read<OrderBloc>().add(AddOrder(
+                                    productId: product.id,
+                                    quantity: quantity,
+                                  ));
+                              // Clear the quantity after adding the order
+                              setState(() {
+                                _quantities[product.id] = 0;
+                                _updateTotalOrderCount();
+                              });
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text('Stock is not sufficient')),
+                              );
+                            }
+                          }
+                        },
+                        child: Text('Order',
+                            style:
+                                blueColorStyle.copyWith(fontWeight: regular)),
                       ),
                     ),
-                    title: Text(product.name,
-                        style: whiteTextStyle.copyWith(fontWeight: bold)),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text('Stock: ${product.stock}',
-                        style: whiteTextStyle.copyWith(fontWeight: regular),),
-                        Text('Price: \Rp ${product.price.toStringAsFixed(2)}',
-                        style: whiteTextStyle.copyWith(fontWeight: regular)),
-                        Row(
-                          children: <Widget>[
-                            IconButton(
-                              icon: const Icon(Icons.remove, color: whiteColor,),
-                              onPressed: () {
-                                _updateQuantity(product.id, -1);
-                              },
-                            ),
-                            Text(_quantities[product.id]?.toString() ?? '0', 
-                            style: whiteTextStyle.copyWith(fontWeight: regular, fontSize: 16)),
-                            IconButton(
-                              icon: const Icon(Icons.add, color: whiteColor,),
-                              onPressed: () {
-                                _updateQuantity(product.id, 1);
-                              },
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    trailing: ElevatedButton(
-                      onPressed: () {
-                        final quantity = _quantities[product.id] ?? 0;
-                        if (quantity > 0) {
-                          if (product.stock >= quantity) {
-                            context.read<OrderBloc>().add(AddOrder(
-                                  productId: product.id,
-                                  quantity: quantity,
-                                ));
-                            // Clear the quantity after adding the order
-                            setState(() {
-                              _quantities[product.id] = 0;
-                              _updateTotalOrderCount();
-                            });
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('Stock is not sufficient')),
-                            );
-                          }
-                        }
-                      },
-                      child: Text('Order',
-                      style: blueColorStyle.copyWith(fontWeight: regular)),
-                    ),
-                  ),
-                );
-              },
-            );
-          } else {
-            return const Center(child: Text('No products available.'));
-          }
-        },
-      ),),
+                  );
+                },
+              );
+            } else {
+              return const Center(child: Text('No products available.'));
+            }
+          },
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: blueColor,
         onPressed: () {
@@ -144,7 +156,10 @@ class _OrderPageState extends State<OrderPage> {
             badgeColor: Colors.red,
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Icon(Icons.shopping_cart, color: whiteColor,),
+          child: Icon(
+            Icons.shopping_cart,
+            color: whiteColor,
+          ),
         ),
       ),
     );

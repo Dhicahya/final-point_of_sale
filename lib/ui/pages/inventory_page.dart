@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:finalproject_sanber/logic/inventory_bloc/inventory_bloc.dart';
 import 'package:finalproject_sanber/models/product_model.dart';
+import 'package:finalproject_sanber/shared/theme.dart';
 import 'package:finalproject_sanber/ui/widgets/toast_message.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,84 +16,104 @@ class InventoryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Inventory'),
-        automaticallyImplyLeading: false, // Removes the back button
+        title: Text(
+          'Inventory',
+          style: whiteTextStyle.copyWith(fontSize: 24, fontWeight: regular),
+        ),
+        automaticallyImplyLeading: false,
+        backgroundColor: blueColor, // Removes the back button
       ),
-      body: BlocListener<InventoryBloc, InventoryState>(
-        listener: (context, state) {
-          if (state is InventoryLoaded) {
-            ToastMessage(
-              context: context,
-              type: ToastificationType.success,
-              message: 'Data successfully loaded',
-            ).toastCustom();
-          } else if (state is InventoryError) {
-            ToastMessage(
-              context: context,
-              type: ToastificationType.error,
-              message: state.message,
-            ).toastCustom();
-          }
-        },
-        child: BlocBuilder<InventoryBloc, InventoryState>(
-          builder: (context, state) {
-            if (state is InventoryLoading) {
-              return const Center(child: CircularProgressIndicator());
+      body: Container(
+        color: whiteColor,
+        child: BlocListener<InventoryBloc, InventoryState>(
+          listener: (context, state) {
+            if (state is InventoryLoaded) {
+              ToastMessage(
+                context: context,
+                type: ToastificationType.success,
+                message: 'Data successfully loaded',
+              ).toastCustom();
             } else if (state is InventoryError) {
-              return Center(child: Text('Error: ${state.message}'));
-            } else if (state is InventoryLoaded) {
-              return ListView.builder(
-                itemCount: state.products.length,
-                itemBuilder: (context, index) {
-                  final product = state.products[index];
-                  return Card(
-                    margin: const EdgeInsets.all(8.0),
-                    elevation: 5,
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.all(8.0),
-                      leading: AspectRatio(
-                        aspectRatio: 1,
-                        child: Image.network(
-                          product.imageUrl,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      title: Text(product.name,
-                          style: const TextStyle(fontWeight: FontWeight.bold)),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text('Stock: ${product.stock}'),
-                          Text(
-                              'Price: \Rp ${product.price.toStringAsFixed(2)}'), // Display price
-                        ],
-                      ),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () {
-                          context
-                              .read<InventoryBloc>()
-                              .add(DeleteProduct(product.id));
-                        },
-                      ),
-                      onTap: () {
-                        _showProductDialog(context, product);
-                      },
-                    ),
-                  );
-                },
-              );
-            } else {
-              return const Center(child: Text('No products available.'));
+              ToastMessage(
+                context: context,
+                type: ToastificationType.error,
+                message: state.message,
+              ).toastCustom();
             }
           },
+          child: BlocBuilder<InventoryBloc, InventoryState>(
+            builder: (context, state) {
+              if (state is InventoryLoading) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (state is InventoryError) {
+                return Center(child: Text('Error: ${state.message}'));
+              } else if (state is InventoryLoaded) {
+                return ListView.builder(
+                  itemCount: state.products.length,
+                  itemBuilder: (context, index) {
+                    final product = state.products[index];
+                    return Card(
+                      color: blueColor,
+                      margin: const EdgeInsets.all(8.0),
+                      elevation: 5,
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.all(8.0),
+                        leading: AspectRatio(
+                          aspectRatio: 1,
+                          child: Image.network(
+                            product.imageUrl,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        title: Text(product.name,
+                            style: whiteTextStyle.copyWith(fontWeight: bold)),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              'Stock: ${product.stock}',
+                              style: whiteTextStyle,
+                            ),
+                            Text(
+                              'Price: \Rp ${product.price.toStringAsFixed(2)}',
+                              style: whiteTextStyle,
+                            ), // Display price
+                          ],
+                        ),
+                        trailing: IconButton(
+                          icon: Icon(
+                            Icons.delete,
+                            color: whiteColor,
+                          ),
+                          onPressed: () {
+                            context
+                                .read<InventoryBloc>()
+                                .add(DeleteProduct(product.id));
+                          },
+                        ),
+                        onTap: () {
+                          _showProductDialog(context, product);
+                        },
+                      ),
+                    );
+                  },
+                );
+              } else {
+                return const Center(child: Text('No products available.'));
+              }
+            },
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: blueColor,
         onPressed: () {
           _showAddProductDialog(context);
         },
-        child: const Icon(Icons.add),
+        child: Icon(
+          Icons.add,
+          color: whiteColor,
+        ),
       ),
     );
   }
@@ -117,7 +138,11 @@ class InventoryPage extends StatelessWidget {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Add Product'),
+          title: Text(
+            'Add Product',
+            style: blackColorStyle,
+          ),
+          backgroundColor: whiteColor,
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
@@ -149,7 +174,10 @@ class InventoryPage extends StatelessWidget {
                 },
               ),
               TextButton(
-                child: const Text('Pick Image'),
+                child: Text(
+                  'Pick Image',
+                  style: blueColorStyle,
+                ),
                 onPressed: () async {
                   await _pickImage();
                 },
@@ -158,13 +186,19 @@ class InventoryPage extends StatelessWidget {
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancel'),
+              child: Text(
+                'Cancel',
+                style: redColorStyle,
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: const Text('Add'),
+              child: Text(
+                'Add',
+                style: greenColorStyle,
+              ),
               onPressed: () async {
                 final name = nameController.text;
                 final stock = int.tryParse(stockController.text);
@@ -247,7 +281,11 @@ class InventoryPage extends StatelessWidget {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Update Product'),
+          title: Text(
+            'Update Product',
+            style: blackColorStyle,
+          ),
+          backgroundColor: whiteColor,
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
@@ -265,9 +303,11 @@ class InventoryPage extends StatelessWidget {
                 keyboardType: TextInputType.numberWithOptions(decimal: true),
                 decoration: const InputDecoration(labelText: 'Price'),
               ),
-              
               TextButton(
-                child: const Text('Pick Image'),
+                child: Text(
+                  'Pick Image',
+                  style: blueColorStyle,
+                ),
                 onPressed: () async {
                   await _pickImage();
                 },
@@ -276,13 +316,19 @@ class InventoryPage extends StatelessWidget {
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancel'),
+              child: Text(
+                'Cancel',
+                style: redColorStyle,
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: const Text('Update'),
+              child: Text(
+                'Update',
+                style: greenColorStyle,
+              ),
               onPressed: () async {
                 final name = nameController.text;
                 final stock = int.tryParse(stockController.text) ?? 0;

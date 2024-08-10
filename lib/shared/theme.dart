@@ -31,6 +31,9 @@ TextStyle redColorStyle = GoogleFonts.dmSans(
 TextStyle greenColorStyle = GoogleFonts.dmSans(
   color: const Color(0xff3A9B7A),
 );
+TextStyle yellowColorStyle = GoogleFonts.dmSans(
+  color: const Color(0xffFFC120),
+);
 
 FontWeight light = FontWeight.w300;
 FontWeight regular = FontWeight.w400;

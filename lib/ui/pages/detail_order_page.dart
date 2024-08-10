@@ -28,6 +28,7 @@ class OrderDetailPage extends StatelessWidget {
 
         productWidgets.add(
           Card(
+            color: blueColor,
             margin: const EdgeInsets.all(8.0),
             elevation: 5,
             child: ListTile(
@@ -40,13 +41,18 @@ class OrderDetailPage extends StatelessWidget {
                 ),
               ),
               title: Text(product.name,
-                  style: const TextStyle(fontWeight: FontWeight.bold)),
+                  style: whiteTextStyle.copyWith(fontWeight: bold)),
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text('Quantity: $quantity'),
                   Text(
-                      'Price: \Rp ${(product.price * quantity).toStringAsFixed(2)}'),
+                    'Quantity: $quantity',
+                    style: whiteTextStyle,
+                  ),
+                  Text(
+                    'Price: \Rp ${(product.price * quantity).toStringAsFixed(2)}',
+                    style: whiteTextStyle,
+                  ),
                 ],
               ),
             ),
@@ -57,78 +63,88 @@ class OrderDetailPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Order Details',
-        style: blackColorStyle.copyWith(fontSize: 24, fontWeight: regular),
+        title: Text(
+          'Order Details',
+          style: whiteTextStyle.copyWith(fontSize: 24, fontWeight: regular),
         ),
+        backgroundColor: blueColor,
+        iconTheme: IconThemeData(color: whiteColor),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            if (productWidgets.isEmpty)
-              const Center(child: Text('No products ordered.'))
-            else
-              Expanded(
-                child: ListView(
-                  children: productWidgets,
-                ),
-              ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                'Total Items: $totalItems',
-                style: blackColorStyle.copyWith(fontSize: 16,fontWeight: bold),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                'Total Price: \Rp ${totalPrice.toStringAsFixed(2)}',
-                style: blackColorStyle.copyWith(fontSize: 16, fontWeight: bold),
-              ),
-            ),
-            Row(
-              children: <Widget>[
+      body: Container(
+        color: whiteColor,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              if (productWidgets.isEmpty)
+                const Center(child: Text('No products ordered.'))
+              else
                 Expanded(
-                  child: OutlinedButton(
-                    onPressed: () {
-                      Navigator.of(context).pop(); // Close the detail page
-                    },
-                    child: Text(
-                      'Cancel',
-                      style: redColorStyle.copyWith(
-                          fontSize: 14, fontWeight: regular),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: Colors.red), // Outline color
-                      backgroundColor: Colors.white, // Button background color
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    ),
+                  child: ListView(
+                    children: productWidgets,
                   ),
                 ),
-                const SizedBox(width: 8.0), // Add space between buttons
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () {
-                      _showPaymentModal(context);
-                    },
-                    child: Text(
-                      'Proceed to Payment',
-                      style: blueColorStyle.copyWith(
-                          fontSize: 14, fontWeight: regular),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: Colors.blue), // Outline color
-                      backgroundColor: Colors.white, // Button background color
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'Total Items: $totalItems',
+                  style:
+                      blackColorStyle.copyWith(fontSize: 16, fontWeight: bold),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'Total Price: \Rp ${totalPrice.toStringAsFixed(2)}',
+                  style:
+                      blackColorStyle.copyWith(fontSize: 16, fontWeight: bold),
+                ),
+              ),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(); // Close the detail page
+                      },
+                      child: Text(
+                        'Cancel',
+                        style: redColorStyle.copyWith(
+                            fontSize: 14, fontWeight: regular),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: Colors.red), // Outline color
+                        backgroundColor:
+                            Colors.white, // Button background color
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16.0), // Add space at the bottom
-          ],
+                  const SizedBox(width: 8.0), // Add space between buttons
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () {
+                        _showPaymentModal(context);
+                      },
+                      child: Text(
+                        'Proceed to Payment',
+                        style: blueColorStyle.copyWith(
+                            fontSize: 14, fontWeight: regular),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: Colors.blue), // Outline color
+                        backgroundColor:
+                            Colors.white, // Button background color
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16.0), // Add space at the bottom
+            ],
+          ),
         ),
       ),
     );
@@ -139,7 +155,11 @@ class OrderDetailPage extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Select Payment Method'),
+          backgroundColor: whiteColor,
+          title: Text(
+            'Select Payment Method',
+            style: blackColorStyle,
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
@@ -148,15 +168,26 @@ class OrderDetailPage extends StatelessWidget {
                   Navigator.of(context).pop();
                   // Handle cash payment logic here
                 },
-                child: Text(
-                  'Pay with Cash',
-                  style: blueColorStyle.copyWith(
-                      fontSize: 14, fontWeight: regular),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(Icons.money, color: yellowColor), // Cash icon
+                    const SizedBox(width: 8.0),
+                    Text(
+                      'Pay with Cash',
+                      style: yellowColorStyle.copyWith(
+                          fontSize: 14, fontWeight: FontWeight.w400),
+                    ),
+                  ],
                 ),
-                style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: Colors.blue), // Outline color
-                  backgroundColor: Colors.white, // Button background color
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: yellowColor,
+                  backgroundColor: Colors.white, // Text color
+                  side: BorderSide(color: yellowColor), // Outline color
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
                 ),
               ),
               const SizedBox(height: 16.0),
@@ -165,15 +196,27 @@ class OrderDetailPage extends StatelessWidget {
                   Navigator.of(context).pop();
                   // Handle bank transfer payment logic here
                 },
-                child: Text(
-                  'Pay with Bank Transfer',
-                  style: blueColorStyle.copyWith(
-                      fontSize: 14, fontWeight: regular),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(Icons.account_balance,
+                        color: greenColor), // Bank transfer icon
+                    const SizedBox(width: 8.0),
+                    Text(
+                      'Pay with Bank Transfer',
+                      style: greenColorStyle.copyWith(
+                          fontSize: 14, fontWeight: FontWeight.w400),
+                    ),
+                  ],
                 ),
-                style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: Colors.blue), // Outline color
-                  backgroundColor: Colors.white, // Button background color
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: greenColor,
+                  backgroundColor: Colors.white, // Text color
+                  side: BorderSide(color: greenColor), // Outline color
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
                 ),
               ),
             ],
