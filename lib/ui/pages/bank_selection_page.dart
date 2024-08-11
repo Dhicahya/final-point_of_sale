@@ -6,7 +6,13 @@ class BankSelectionPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final banks = ['Mandiri', 'BRI', 'BNI', 'BCA'];
+    final banks = {
+      'Mandiri': 'assets/icons/bank_mandiri_icon.png',
+      'BRI': 'assets/icons/bank_bri_icon.png',
+      'BNI': 'assets/icons/bank_bni_icon.png',
+      'BCA': 'assets/icons/bank_bca_icon.png',
+      'CIMB': 'assets/icons/bank_cimb_icon.png',
+    };
 
     return Scaffold(
       appBar: AppBar(
@@ -17,20 +23,33 @@ class BankSelectionPage extends StatelessWidget {
         backgroundColor: blueColor,
         iconTheme: IconThemeData(color: whiteColor),
       ),
-      body: ListView.builder(
-        itemCount: banks.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(banks[index]),
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => BankDetailPage(bank: banks[index]),
-                ),
-              );
-            },
-          );
-        },
+      body: Container(
+        color: whiteColor,
+        child: ListView.separated(
+          itemCount: banks.length,
+          separatorBuilder: (context, index) => Divider(
+            color: Colors.grey[200], // Color for the divider
+            height: 1.0, // Height of the divider
+          ),
+          itemBuilder: (context, index) {
+            final bank = banks.keys.elementAt(index);
+            final imagePath = banks[bank]!;
+
+            return ListTile(
+              leading: imagePath.endsWith('.png')
+                  ? Image.asset(imagePath, width: 40, height: 40)
+                  : Icon(Icons.help_outline, color: blueColor), // Fallback icon
+              title: Text(bank),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => BankDetailPage(bank: bank),
+                  ),
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }
@@ -52,10 +71,13 @@ class BankDetailPage extends StatelessWidget {
         backgroundColor: blueColor,
         iconTheme: IconThemeData(color: whiteColor),
       ),
-      body: Center(
-        child: Text(
-          'Details for $bank',
-          style: blackColorStyle.copyWith(fontSize: 18, fontWeight: bold),
+      body: Container(
+        color: whiteColor,
+        child: Center(
+          child: Text(
+            'Details for $bank',
+            style: blackColorStyle.copyWith(fontSize: 18, fontWeight: bold),
+          ),
         ),
       ),
     );

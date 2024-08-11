@@ -1,11 +1,8 @@
-import 'package:finalproject_sanber/logic/payment_bloc/payment_bloc.dart';
 import 'package:finalproject_sanber/ui/pages/bank_selection_page.dart';
-import 'package:finalproject_sanber/ui/pages/payment_success_page.dart';
+import 'package:finalproject_sanber/ui/pages/cash_payment_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:finalproject_sanber/models/product_model.dart';
 import 'package:finalproject_sanber/shared/theme.dart';
-
 
 class OrderDetailPage extends StatelessWidget {
   final List<Product> products;
@@ -82,7 +79,11 @@ class OrderDetailPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               if (productWidgets.isEmpty)
-                Center(child: Text('No products ordered.', style: blackColorStyle,))
+                Center(
+                    child: Text(
+                  'No products ordered.',
+                  style: blackColorStyle,
+                ))
               else
                 Expanded(
                   child: ListView(
@@ -129,7 +130,13 @@ class OrderDetailPage extends StatelessWidget {
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () {
-                        _showPaymentModal(context);
+                        if (products.isEmpty || quantities.isEmpty) {
+                          // Show alert if no products are ordered
+                          _showNoProductsAlert(context);
+                        } else {
+                          _showPaymentModal(
+                              context, totalPrice); // Pass totalPrice here
+                        }
                       },
                       child: Text(
                         'Proceed to Payment',
@@ -154,7 +161,7 @@ class OrderDetailPage extends StatelessWidget {
     );
   }
 
-  void _showPaymentModal(BuildContext context) {
+  void _showPaymentModal(BuildContext context, double totalPrice) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -170,15 +177,14 @@ class OrderDetailPage extends StatelessWidget {
               ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).pop();
-                  context.read<PaymentBloc>().add(
-                        SubmitPayment(
-                          products: products,
-                          quantities: quantities,
-                          paymentMethod: 'Cash',
-                        ),
-                      );
                   Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => PaymentSuccessPage()),
+                    MaterialPageRoute(
+                      builder: (context) => CashPaymentPage(
+                        totalPrice: totalPrice, // Pass totalPrice here
+                        products: products, // Pass products here
+                        quantities: quantities, // Pass quantities here
+                      ),
+                    ),
                   );
                 },
                 child: Row(
@@ -208,7 +214,8 @@ class OrderDetailPage extends StatelessWidget {
                 onPressed: () {
                   Navigator.of(context).pop();
                   Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => BankSelectionPage()),
+                    MaterialPageRoute(
+                        builder: (context) => BankSelectionPage()),
                   );
                 },
                 child: Row(
@@ -235,6 +242,36 @@ class OrderDetailPage extends StatelessWidget {
               ),
             ],
           ),
+        );
+      },
+    );
+  }
+
+  void _showNoProductsAlert(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: whiteColor,
+          title: Text(
+            'No Products Ordered',
+            style: blackColorStyle,
+          ),
+          content: Text(
+            'You need to add products to your order before proceeding to payment.',
+            style: blackColorStyle,
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the alert dialog
+              },
+              child: Text(
+                'OK',
+                style: blueColorStyle,
+              ),
+            ),
+          ],
         );
       },
     );

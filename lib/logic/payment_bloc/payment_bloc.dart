@@ -18,12 +18,35 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
   ) async {
     emit(PaymentLoading());
     try {
-      await _savePaymentData(
-        event.products,
-        event.quantities,
-        event.paymentMethod,
-      );
-      emit(PaymentSuccess());
+      if (event.paymentMethod == 'Cash') {
+        // Handle cash payment
+        await _savePaymentData(
+          event.products,
+          event.quantities,
+          event.paymentMethod,
+          status: 'success', // Immediately set status to success
+        );
+        emit(PaymentSuccess());
+      } else if (event.paymentMethod == 'Bank Transfer') {
+        // Handle bank transfer payment
+        await _savePaymentData(
+          event.products,
+          event.quantities,
+          event.paymentMethod,
+          status: 'loading', // Set status to loading initially
+        );
+
+        // Simulate a delay for bank transfer
+        await Future.delayed(Duration(seconds: 30));
+
+        // Update payment status to success after delay
+        await _updatePaymentStatus(
+          event.products,
+          event.quantities,
+          event.paymentMethod,
+        );
+        emit(PaymentSuccess());
+      }
     } catch (e) {
       emit(PaymentFailure(error: e.toString()));
     }
@@ -32,8 +55,9 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
   Future<void> _savePaymentData(
     List<Product> products,
     Map<String, int> quantities,
-    String paymentMethod,
-  ) async {
+    String paymentMethod, {
+    required String status,
+  }) async {
     final paymentData = {
       'date': DateTime.now(),
       'products': products
@@ -44,9 +68,30 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
               })
           .toList(),
       'paymentMethod': paymentMethod,
-      'status': 'loading', // Update this based on payment status
+      'status': status,
     };
 
     await _firestore.collection('payments').add(paymentData);
+  }
+
+  Future<void> _updatePaymentStatus(
+    List<Product> products,
+    Map<String, int> quantities,
+    String paymentMethod,
+  ) async {
+    // Retrieve the latest payment document
+    final querySnapshot = await _firestore
+        .collection('payments')
+        .where('paymentMethod', isEqualTo: paymentMethod)
+        .orderBy('date', descending: true)
+        .limit(1)
+        .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      final docId = querySnapshot.docs.first.id;
+      await _firestore.collection('payments').doc(docId).update({
+        'status': 'success',
+      });
+    }
   }
 }

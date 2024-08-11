@@ -53,15 +53,7 @@ class _LayoutNavigationState extends State<LayoutNavigation> {
                 label: 'Home',
               ),
               BottomNavigationBarItem(
-                icon: badges.Badge(
-                  badgeContent: Text(
-                    orderCount.toString(),
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                  // ignore: prefer_const_constructors
-                  badgeStyle: badges.BadgeStyle(badgeColor: Colors.red),
-                  child: Icon(Icons.shopping_bag_outlined),
-                ),
+                icon: Icon(Icons.shopping_bag_outlined),
                 label: 'Order',
               ),
               const BottomNavigationBarItem(
