@@ -148,7 +148,7 @@ class InventoryPage extends StatelessWidget {
             children: <Widget>[
               TextField(
                 controller: nameController,
-                decoration: const InputDecoration(labelText: 'Name'),
+                decoration: const InputDecoration(labelText: 'Name', hoverColor: blackColor, focusColor: blackColor),
               ),
               TextField(
                 controller: stockController,

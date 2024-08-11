@@ -2,7 +2,6 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:finalproject_sanber/models/product_model.dart';
-import 'package:flutter/rendering.dart';
 
 part 'inventory_event.dart';
 part 'inventory_state.dart';

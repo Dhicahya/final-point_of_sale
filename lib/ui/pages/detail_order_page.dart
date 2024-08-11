@@ -1,6 +1,11 @@
+import 'package:finalproject_sanber/logic/payment_bloc/payment_bloc.dart';
+import 'package:finalproject_sanber/ui/pages/bank_selection_page.dart';
+import 'package:finalproject_sanber/ui/pages/payment_success_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:finalproject_sanber/models/product_model.dart';
 import 'package:finalproject_sanber/shared/theme.dart';
+
 
 class OrderDetailPage extends StatelessWidget {
   final List<Product> products;
@@ -14,7 +19,6 @@ class OrderDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Calculate total item count and total price
     int totalItems = 0;
     double totalPrice = 0.0;
 
@@ -78,7 +82,7 @@ class OrderDetailPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               if (productWidgets.isEmpty)
-                const Center(child: Text('No products ordered.'))
+                Center(child: Text('No products ordered.', style: blackColorStyle,))
               else
                 Expanded(
                   child: ListView(
@@ -166,12 +170,21 @@ class OrderDetailPage extends StatelessWidget {
               ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).pop();
-                  // Handle cash payment logic here
+                  context.read<PaymentBloc>().add(
+                        SubmitPayment(
+                          products: products,
+                          quantities: quantities,
+                          paymentMethod: 'Cash',
+                        ),
+                      );
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => PaymentSuccessPage()),
+                  );
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Icon(Icons.money, color: yellowColor), // Cash icon
+                    Icon(Icons.money, color: yellowColor),
                     const SizedBox(width: 8.0),
                     Text(
                       'Pay with Cash',
@@ -182,8 +195,8 @@ class OrderDetailPage extends StatelessWidget {
                 ),
                 style: ElevatedButton.styleFrom(
                   foregroundColor: yellowColor,
-                  backgroundColor: Colors.white, // Text color
-                  side: BorderSide(color: yellowColor), // Outline color
+                  backgroundColor: Colors.white,
+                  side: BorderSide(color: yellowColor),
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
@@ -194,13 +207,14 @@ class OrderDetailPage extends StatelessWidget {
               ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).pop();
-                  // Handle bank transfer payment logic here
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => BankSelectionPage()),
+                  );
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Icon(Icons.account_balance,
-                        color: greenColor), // Bank transfer icon
+                    Icon(Icons.account_balance, color: greenColor),
                     const SizedBox(width: 8.0),
                     Text(
                       'Pay with Bank Transfer',
@@ -211,8 +225,8 @@ class OrderDetailPage extends StatelessWidget {
                 ),
                 style: ElevatedButton.styleFrom(
                   foregroundColor: greenColor,
-                  backgroundColor: Colors.white, // Text color
-                  side: BorderSide(color: greenColor), // Outline color
+                  backgroundColor: Colors.white,
+                  side: BorderSide(color: greenColor),
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
