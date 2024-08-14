@@ -1,5 +1,4 @@
 // payment_state.dart
-
 part of 'payment_bloc.dart';
 
 abstract class PaymentState extends Equatable {
@@ -14,9 +13,11 @@ class PaymentInitial extends PaymentState {}
 class PaymentLoading extends PaymentState {}
 
 class PaymentSuccess extends PaymentState {
-  final String transactionId; // Add this
+  final String transactionId; // Include transactionId in success state
 
-  const PaymentSuccess({required this.transactionId});
+  const PaymentSuccess({
+    required this.transactionId,
+  });
 
   @override
   List<Object> get props => [transactionId];

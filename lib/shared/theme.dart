@@ -12,6 +12,7 @@ Color greenColor = const Color(0xff3A9B7A);
 Color navyColor = const Color(0xff13181F);
 const Color blackColor =  Color(0xff000000);
 const Color whiteColor = Color(0xffFFFFFF);
+const Color greyColor = Color(0xff838589);
 
 TextStyle whiteTextStyle = GoogleFonts.dmSans(
   color: const Color(0xffFFFFFF),

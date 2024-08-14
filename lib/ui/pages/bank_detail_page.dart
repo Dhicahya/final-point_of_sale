@@ -10,14 +10,14 @@ import 'package:finalproject_sanber/ui/pages/payment_success_page.dart';
 class BankDetailPage extends StatelessWidget {
   final String bank;
   final double totalPrice;
-  final List<Product> products; // Added to receive products
-  final Map<String, int> quantities; // Added to receive quantities
+  final List<Product> products;
+  final Map<String, int> quantities;
 
   const BankDetailPage({
     required this.bank,
     required this.totalPrice,
-    required this.products, // Added required parameter
-    required this.quantities, // Added required parameter
+    required this.products,
+    required this.quantities,
     super.key,
   });
 
@@ -71,16 +71,18 @@ class BankDetailPage extends StatelessWidget {
   }
 
   void _confirmBankTransfer(BuildContext context) {
+    final transactionId = _generateTransactionId(); // Generate transaction ID
+
     // Trigger the PaymentBloc to handle bank transfer
     context.read<PaymentBloc>().add(
           SubmitPayment(
-            products: products,
+            products: products, // Access properties directly
             quantities: quantities,
             paymentMethod: 'Bank Transfer',
+            transactionId: transactionId,
+            totalPrice: totalPrice,
           ),
         );
-
-    final transactionId = _generateTransactionId(); // Generate transaction ID
 
     // Navigate to PaymentSuccessPage after payment is handled
     Navigator.of(context).pushReplacement(
@@ -89,6 +91,9 @@ class BankDetailPage extends StatelessWidget {
           paymentMethod: 'Bank Transfer',
           totalPrice: totalPrice,
           transactionId: transactionId,
+          paymentDate: DateTime.now(), // Pass the current date as payment date
+          products: products,
+          quantities: quantities,
         ),
       ),
     );

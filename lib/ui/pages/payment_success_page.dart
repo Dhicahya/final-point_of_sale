@@ -1,16 +1,23 @@
-// payment_success_page.dart
+import 'package:finalproject_sanber/ui/pages/pdf/pdf_format.dart';
 import 'package:flutter/material.dart';
 import 'package:finalproject_sanber/shared/theme.dart';
+import 'package:finalproject_sanber/models/product_model.dart';
 
 class PaymentSuccessPage extends StatelessWidget {
   final String paymentMethod;
   final double totalPrice;
   final String transactionId;
+  final DateTime paymentDate; // Added to display payment date
+  final List<Product> products; // Added to display products
+  final Map<String, int> quantities; // Added to display quantities
 
   const PaymentSuccessPage({
     required this.paymentMethod,
     required this.totalPrice,
     required this.transactionId,
+    required this.paymentDate,
+    required this.products,
+    required this.quantities,
     super.key,
   });
 
@@ -31,7 +38,6 @@ class PaymentSuccessPage extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
@@ -45,29 +51,104 @@ class PaymentSuccessPage extends StatelessWidget {
                   style: blackColorStyle.copyWith(fontSize: 16),
                 ),
                 Text(
-                  'Total Price: \Rp ${totalPrice.toStringAsFixed(2)}',
-                  style: blackColorStyle.copyWith(fontSize: 16),
-                ),
-                Text(
                   'Transaction ID: $transactionId',
                   style: blackColorStyle.copyWith(fontSize: 16),
                 ),
+                Text(
+                  'Payment Date: ${paymentDate.toLocal().toString()}',
+                  style: blackColorStyle.copyWith(fontSize: 16),
+                ),
                 const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pushNamed('/home');
-                  },
-                  child: Text(
-                    'Back to Orders',
-                    style: whiteTextStyle.copyWith(
-                        fontSize: 16, fontWeight: regular),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: blueColor, // Button background color
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 16.0, horizontal: 32.0),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
+                Text(
+                  'Order Details:',
+                  style:
+                      blackColorStyle.copyWith(fontSize: 18, fontWeight: bold),
+                ),
+                const SizedBox(height: 10),
+                ...products
+                    .where((product) => quantities[product.id] != null)
+                    .map((product) {
+                  final quantity = quantities[product.id]!;
+                  final price = product.price * quantity;
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '${product.name} x $quantity',
+                          style: blackColorStyle.copyWith(fontSize: 16),
+                        ),
+                        Text(
+                          '\Rp ${price.toStringAsFixed(2)}',
+                          style: blackColorStyle.copyWith(fontSize: 16),
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
+                const SizedBox(height: 20),
+                Text(
+                  'Total Price: \Rp ${totalPrice.toStringAsFixed(2)}',
+                  style:
+                      blackColorStyle.copyWith(fontSize: 18, fontWeight: bold),
+                ),
+                const SizedBox(height: 20),
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pushNamed('/home');
+                          },
+                          child: Text(
+                            'Back to Orders',
+                            style: whiteTextStyle.copyWith(
+                                fontSize: 16, fontWeight: regular),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: greyColor,
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 16.0, horizontal: 32.0),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 16.0),
+                        ElevatedButton(
+                          onPressed: () async {
+                            final path = await generatePdf(
+                              paymentMethod: paymentMethod,
+                              totalPrice: totalPrice,
+                              transactionId: transactionId,
+                              paymentDate: paymentDate,
+                              products: products,
+                              quantities: quantities,
+                            );
+                            // Handle the PDF file, e.g., share or open it
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('PDF saved to $path')),
+                            );
+                          },
+                          child: Text(
+                            'Print PDF',
+                            style: whiteTextStyle.copyWith(
+                                fontSize: 16, fontWeight: regular),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: greenColor,
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 16.0, horizontal: 32.0),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),

@@ -55,6 +55,9 @@ dependencies:
   badges: ^3.1.2
   flutter_launcher_icons: ^0.13.1
   cached_network_image: ^3.4.0
+  uuid: ^4.4.2
+  pdf: ^3.11.1
+  pdf_image_renderer: ^0.7.0
 
 dev_dependencies:
   build_runner: ^2.3.0

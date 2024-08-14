@@ -1,5 +1,5 @@
 import 'dart:math';
-import 'package:uuid/uuid.dart';
+
 import 'package:finalproject_sanber/logic/payment_bloc/payment_bloc.dart';
 import 'package:finalproject_sanber/models/product_model.dart';
 import 'package:finalproject_sanber/ui/pages/payment_success_page.dart';
@@ -26,7 +26,6 @@ class CashPaymentPage extends StatefulWidget {
 class _CashPaymentPageState extends State<CashPaymentPage> {
   final TextEditingController _amountController = TextEditingController();
   double? _change;
-  final String _transactionId = Uuid().v4(); // Generate a unique transaction ID
 
   void _calculateChange() {
     final double? amount = double.tryParse(_amountController.text);
@@ -51,6 +50,8 @@ class _CashPaymentPageState extends State<CashPaymentPage> {
               products: widget.products,
               quantities: widget.quantities,
               paymentMethod: 'Cash',
+              transactionId: transactionId,
+              totalPrice: widget.totalPrice,
             ),
           );
 
@@ -61,17 +62,21 @@ class _CashPaymentPageState extends State<CashPaymentPage> {
             paymentMethod: 'Cash',
             totalPrice: widget.totalPrice,
             transactionId: transactionId,
+            paymentDate:
+                DateTime.now(), // Pass the current date as payment date
+            products: widget.products,
+            quantities: widget.quantities,
           ),
         ),
       );
     }
   }
 
+
   String _generateTransactionId() {
     final random = Random();
     return 'TXN-${random.nextInt(1000000)}'; // Generates a random 6-digit transaction ID
   }
-
 
   @override
   Widget build(BuildContext context) {
