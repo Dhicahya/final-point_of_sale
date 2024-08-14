@@ -215,7 +215,12 @@ class OrderDetailPage extends StatelessWidget {
                   Navigator.of(context).pop();
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                        builder: (context) => BankSelectionPage()),
+                      builder: (context) => BankSelectionPage(
+                        totalPrice: totalPrice,
+                        products: products,
+                        quantities: quantities,
+                      ),
+                    ),
                   );
                 },
                 child: Row(

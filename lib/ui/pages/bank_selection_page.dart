@@ -1,8 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:finalproject_sanber/shared/theme.dart';
+import 'package:finalproject_sanber/models/product_model.dart';
+import 'package:finalproject_sanber/ui/pages/bank_detail_page.dart';
 
 class BankSelectionPage extends StatelessWidget {
-  const BankSelectionPage({super.key});
+  final double totalPrice;
+  final List<Product> products;
+  final Map<String, int> quantities;
+
+  const BankSelectionPage({
+    required this.totalPrice,
+    required this.products,
+    required this.quantities,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -43,41 +54,17 @@ class BankSelectionPage extends StatelessWidget {
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => BankDetailPage(bank: bank),
+                    builder: (context) => BankDetailPage(
+                      bank: bank,
+                      totalPrice: totalPrice,
+                      products: products,
+                      quantities: quantities,
+                    ),
                   ),
                 );
               },
             );
           },
-        ),
-      ),
-    );
-  }
-}
-
-class BankDetailPage extends StatelessWidget {
-  final String bank;
-
-  const BankDetailPage({required this.bank, super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Bank Details',
-          style: whiteTextStyle.copyWith(fontSize: 24, fontWeight: regular),
-        ),
-        backgroundColor: blueColor,
-        iconTheme: IconThemeData(color: whiteColor),
-      ),
-      body: Container(
-        color: whiteColor,
-        child: Center(
-          child: Text(
-            'Details for $bank',
-            style: blackColorStyle.copyWith(fontSize: 18, fontWeight: bold),
-          ),
         ),
       ),
     );

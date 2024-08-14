@@ -1,3 +1,5 @@
+import 'dart:math';
+import 'package:uuid/uuid.dart';
 import 'package:finalproject_sanber/logic/payment_bloc/payment_bloc.dart';
 import 'package:finalproject_sanber/models/product_model.dart';
 import 'package:finalproject_sanber/ui/pages/payment_success_page.dart';
@@ -24,6 +26,7 @@ class CashPaymentPage extends StatefulWidget {
 class _CashPaymentPageState extends State<CashPaymentPage> {
   final TextEditingController _amountController = TextEditingController();
   double? _change;
+  final String _transactionId = Uuid().v4(); // Generate a unique transaction ID
 
   void _calculateChange() {
     final double? amount = double.tryParse(_amountController.text);
@@ -40,6 +43,9 @@ class _CashPaymentPageState extends State<CashPaymentPage> {
 
   void _confirmPayment() {
     if (_change != null && _change! >= 0) {
+      final transactionId = _generateTransactionId(); // Generate transaction ID
+
+      // Trigger the PaymentBloc to handle cash payment
       context.read<PaymentBloc>().add(
             SubmitPayment(
               products: widget.products,
@@ -47,11 +53,25 @@ class _CashPaymentPageState extends State<CashPaymentPage> {
               paymentMethod: 'Cash',
             ),
           );
+
+      // Navigate to PaymentSuccessPage after payment is handled
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => PaymentSuccessPage()),
+        MaterialPageRoute(
+          builder: (context) => PaymentSuccessPage(
+            paymentMethod: 'Cash',
+            totalPrice: widget.totalPrice,
+            transactionId: transactionId,
+          ),
+        ),
       );
     }
   }
+
+  String _generateTransactionId() {
+    final random = Random();
+    return 'TXN-${random.nextInt(1000000)}'; // Generates a random 6-digit transaction ID
+  }
+
 
   @override
   Widget build(BuildContext context) {
