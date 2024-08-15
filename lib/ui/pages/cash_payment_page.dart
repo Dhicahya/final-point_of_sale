@@ -44,11 +44,20 @@ class _CashPaymentPageState extends State<CashPaymentPage> {
     if (_change != null && _change! >= 0) {
       final transactionId = _generateTransactionId(); // Generate transaction ID
 
+      // Filter products with quantity > 0
+      final filteredProducts = widget.products
+          .where((product) =>
+              widget.quantities[product.id] != null &&
+              widget.quantities[product.id]! > 0)
+          .toList();
+      final filteredQuantities = Map.fromEntries(filteredProducts.map(
+          (product) => MapEntry(product.id, widget.quantities[product.id]!)));
+
       // Trigger the PaymentBloc to handle cash payment
       context.read<PaymentBloc>().add(
             SubmitPayment(
-              products: widget.products,
-              quantities: widget.quantities,
+              products: filteredProducts,
+              quantities: filteredQuantities,
               paymentMethod: 'Cash',
               transactionId: transactionId,
               totalPrice: widget.totalPrice,
@@ -64,14 +73,13 @@ class _CashPaymentPageState extends State<CashPaymentPage> {
             transactionId: transactionId,
             paymentDate:
                 DateTime.now(), // Pass the current date as payment date
-            products: widget.products,
-            quantities: widget.quantities,
+            products: filteredProducts, // Pass filtered products
+            quantities: filteredQuantities, // Pass filtered quantities
           ),
         ),
       );
     }
   }
-
 
   String _generateTransactionId() {
     final random = Random();

@@ -3,6 +3,7 @@ import 'package:finalproject_sanber/shared/theme.dart';
 import 'package:finalproject_sanber/ui/pages/order_page.dart';
 import 'package:finalproject_sanber/ui/pages/inventory_page.dart';
 import 'package:finalproject_sanber/ui/pages/profile_page.dart';
+import 'package:finalproject_sanber/ui/pages/report_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -18,7 +19,8 @@ class _LayoutNavigationState extends State<LayoutNavigation> {
   List<Widget> page = [
     const InventoryPage(),
     const OrderPage(),
-    const ProfilePage()
+    ReportPage(),
+    const ProfilePage(),
   ];
 
   @override
@@ -47,12 +49,16 @@ class _LayoutNavigationState extends State<LayoutNavigation> {
             },
             items: [
               BottomNavigationBarItem(
-                icon: Icon(Icons.home_filled),
+                icon: Icon(Icons.home_outlined),
                 label: 'Home',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.shopping_bag_outlined),
                 label: 'Order',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.report_outlined),
+                label: 'Report',
               ),
               const BottomNavigationBarItem(
                 icon: Icon(Icons.people_outline_outlined),

@@ -77,6 +77,10 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
     final paymentData = {
       'date': paymentDate,
       'products': products
+          .where((p) =>
+              quantities[p.id] != null &&
+              quantities[p.id]! >
+                  0) // Filter out products with null or zero quantities
           .map((p) => {
                 'name': p.name,
                 'quantity': quantities[p.id],
@@ -90,6 +94,7 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
 
     await _firestore.collection('payments').add(paymentData);
   }
+
 
   Future<void> _updatePaymentStatus(
     String transactionId,

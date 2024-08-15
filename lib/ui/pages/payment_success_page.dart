@@ -2,14 +2,16 @@ import 'package:finalproject_sanber/ui/pages/pdf/pdf_format.dart';
 import 'package:flutter/material.dart';
 import 'package:finalproject_sanber/shared/theme.dart';
 import 'package:finalproject_sanber/models/product_model.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:open_file/open_file.dart';
 
 class PaymentSuccessPage extends StatelessWidget {
   final String paymentMethod;
   final double totalPrice;
   final String transactionId;
-  final DateTime paymentDate; // Added to display payment date
-  final List<Product> products; // Added to display products
-  final Map<String, int> quantities; // Added to display quantities
+  final DateTime paymentDate;
+  final List<Product> products;
+  final Map<String, int> quantities;
 
   const PaymentSuccessPage({
     required this.paymentMethod,
@@ -129,10 +131,11 @@ class PaymentSuccessPage extends StatelessWidget {
                               products: products,
                               quantities: quantities,
                             );
-                            // Handle the PDF file, e.g., share or open it
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('PDF saved to $path')),
-                            );
+                            // Share the PDF file
+                            Share.shareXFiles([XFile(path)],
+                                text: 'Here is your payment summary.');
+                            // Optionally, open the PDF file
+                            OpenFile.open(path);
                           },
                           child: Text(
                             'Print PDF',
@@ -148,6 +151,7 @@ class PaymentSuccessPage extends StatelessWidget {
                             ),
                           ),
                         ),
+
                       ],
                     ),
                   ),

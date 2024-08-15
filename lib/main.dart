@@ -3,6 +3,7 @@ import 'package:finalproject_sanber/logic/auth_bloc/auth_bloc.dart';
 import 'package:finalproject_sanber/logic/inventory_bloc/inventory_bloc.dart';
 import 'package:finalproject_sanber/logic/order_bloc/order_bloc.dart';
 import 'package:finalproject_sanber/logic/payment_bloc/payment_bloc.dart';
+import 'package:finalproject_sanber/logic/report_bloc/report_bloc.dart';
 import 'package:finalproject_sanber/logic/user_bloc/user_bloc.dart';
 import 'package:finalproject_sanber/services/user_service.dart';
 import 'package:finalproject_sanber/ui/pages/login_page.dart';
@@ -45,6 +46,7 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider<OrderBloc>(create: (context) => OrderBloc()),
         BlocProvider<PaymentBloc>(create: (context) => PaymentBloc()),
+        BlocProvider<ReportBloc>(create: (context) => ReportBloc()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
